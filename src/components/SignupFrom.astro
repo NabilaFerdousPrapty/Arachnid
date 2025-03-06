@@ -1,33 +1,33 @@
 ---
-import axios from "axios";
-import "../styles/global.css";
-
 let email = "";
 let password = "";
 let name = "";
 let message = "";
 
 const handleSignup = async (event) => {
-  event.preventDefault(); // Prevent the default form submission
+  event.preventDefault(); // Prevent default form submission behavior
 
   console.log("Name:", name);
   console.log("Email:", email);
   console.log("Password:", password);
 
   try {
-    const response = await axios.post("http://127.0.0.1:8000/signup", {
-      email,
-      password,
-      name,
+    const response = await fetch("http://localhost:8000/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password, name }),
     });
+
+    const data = await response.json();
     message = "Signup successful!";
-    console.log("User:", response.data.user);
+    console.log("User:", data.user);
 
     // Redirect to login page after successful signup
     window.location.href = "/login";
   } catch (error) {
-    message =
-      error.response?.data?.detail || "Signup failed. Please try again.";
+    message = error.message || "Signup failed. Please try again.";
   }
 };
 ---
@@ -37,7 +37,7 @@ const handleSignup = async (event) => {
 >
   <div class="flex justify-center mx-auto"></div>
 
-  <form class="mt-6" on:submit|preventDefault={handleSignup}>
+  <form class="mt-6" onsubmit={handleSignup}>
     <div>
       <label for="name" class="block text-sm text-gray-800 dark:text-gray-200"
         >Name</label
@@ -45,7 +45,10 @@ const handleSignup = async (event) => {
       <input
         type="text"
         id="name"
-        bind:value={name}
+        value={name}
+        onInput={(e) => {
+          name = e.target.value;
+        }}
         class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
         required
       />
@@ -58,7 +61,10 @@ const handleSignup = async (event) => {
       <input
         type="email"
         id="email"
-        bind:value={email}
+        value={email}
+        onInput={(e) => {
+          email = e.target.value;
+        }}
         class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
         required
       />
@@ -72,7 +78,10 @@ const handleSignup = async (event) => {
       <input
         type="password"
         id="password"
-        bind:value={password}
+        value={password}
+        onInput={(e) => {
+          password = e.target.value;
+        }}
         class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
         required
       />
@@ -99,3 +108,35 @@ const handleSignup = async (event) => {
 
   <p class="mt-4 text-center text-red-500">{message}</p>
 </div>
+
+<script>
+  // Add client:load to ensure this script runs in the browser
+  const form = document.querySelector("form");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    fetch("http://localhost:8000/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password, name }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("User:", data.user);
+        window.location.href = "/login"; // Redirect to login page
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        const errorMessageElement = document.querySelector("p.text-red-500");
+        if (errorMessageElement) {
+          errorMessageElement.textContent = "Signup failed. Please try again.";
+        }
+      });
+  });
+</script>
