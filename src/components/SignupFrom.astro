@@ -1,0 +1,101 @@
+---
+import axios from "axios";
+import "../styles/global.css";
+
+let email = "";
+let password = "";
+let name = "";
+let message = "";
+
+const handleSignup = async (event) => {
+  event.preventDefault(); // Prevent the default form submission
+
+  console.log("Name:", name);
+  console.log("Email:", email);
+  console.log("Password:", password);
+
+  try {
+    const response = await axios.post("http://127.0.0.1:8000/signup", {
+      email,
+      password,
+      name,
+    });
+    message = "Signup successful!";
+    console.log("User:", response.data.user);
+
+    // Redirect to login page after successful signup
+    window.location.href = "/login";
+  } catch (error) {
+    message =
+      error.response?.data?.detail || "Signup failed. Please try again.";
+  }
+};
+---
+
+<div
+  class="w-full max-w-sm p-6 m-auto mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800"
+>
+  <div class="flex justify-center mx-auto"></div>
+
+  <form class="mt-6" on:submit|preventDefault={handleSignup}>
+    <div>
+      <label for="name" class="block text-sm text-gray-800 dark:text-gray-200"
+        >Name</label
+      >
+      <input
+        type="text"
+        id="name"
+        bind:value={name}
+        class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+        required
+      />
+    </div>
+
+    <div class="mt-4">
+      <label for="email" class="block text-sm text-gray-800 dark:text-gray-200"
+        >Email</label
+      >
+      <input
+        type="email"
+        id="email"
+        bind:value={email}
+        class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+        required
+      />
+    </div>
+
+    <div class="mt-4">
+      <label
+        for="password"
+        class="block text-sm text-gray-800 dark:text-gray-200">Password</label
+      >
+      <input
+        type="password"
+        id="password"
+        bind:value={password}
+        class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+        required
+      />
+    </div>
+
+    <div class="mt-6">
+      <button
+        type="submit"
+        class="w-full px-6 py-2.5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
+      >
+        Sign Up
+      </button>
+    </div>
+  </form>
+
+  <p class="mt-8 text-xs font-light text-center text-gray-400">
+    Already have an account? <a
+      href="/login"
+      class="font-medium text-gray-700 dark:text-gray-200 hover:underline"
+    >
+      Login
+    </a>
+  </p>
+
+  <p class="mt-4 text-center text-red-500">{message}</p>
+</div>
