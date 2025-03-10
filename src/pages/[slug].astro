@@ -1,0 +1,7 @@
+---
+export function getStaticPaths() {
+  return [
+    { params: { slug: decodeURI("%5Bpage%5D") } }, // decodes to "[page]"
+  ];
+}
+---
